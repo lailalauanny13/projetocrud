@@ -50,8 +50,9 @@ include('protect.php');
                 </div>
                 <h3 class="text-xl font-bold text-white mb-2">Módulo de Produtos</h3>
                 <p class="text-zinc-400 text-sm mb-4">Gerencie o estoque, preços e especificações técnicas de tintas e produtos.</p>
-                <a href="produtos/index.php" class="inline-flex items-center text-sm font-semibold text-red-500 hover:text-red-400 transition-colors">
-                    Acessar Módulo &rarr;
+              <a href="paginas/produtos/index.php" class="inline-flex items-center text-sm font-semibold text-red-500 hover:text-red-400 transition-colors">
+    Acessar Módulo &rarr;
+</a>
                 </a>
             </div>
 
@@ -61,9 +62,9 @@ include('protect.php');
                 </div>
                 <h3 class="text-xl font-bold text-white mb-2">Módulo de Clientes</h3>
                 <p class="text-zinc-400 text-sm mb-4">Visualize, edite e controle o cadastro de clientes e compradores parceiros.</p>
-                <a href="clientes/index.php" class="inline-flex items-center text-sm font-semibold text-red-500 hover:text-red-400 transition-colors">
-                    Acessar Módulo &rarr;
-                </a>
+               <a href="paginas/clientes/index.php" class="inline-flex items-center text-sm font-semibold text-red-500 hover:text-red-400 transition-colors">
+    Acessar Módulo &rarr;
+</a>
             </div>
 
             <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-xl hover:border-red-600/50 transition-colors duration-300">
@@ -72,9 +73,9 @@ include('protect.php');
                 </div>
                 <h3 class="text-xl font-bold text-white mb-2">Módulo de Vendas</h3>
                 <p class="text-zinc-400 text-sm mb-4">Acompanhe relatórios de pedidos, faturamento e ordens de serviço geradas.</p>
-                <a href="vendas/index.php" class="inline-flex items-center text-sm font-semibold text-red-500 hover:text-red-400 transition-colors">
-                    Acessar Módulo &rarr;
-                </a>
+              <a href="paginas/vendas/index.php" class="inline-flex items-center text-sm font-semibold text-red-500 hover:text-red-400 transition-colors">
+    Acessar Módulo &rarr;
+</a>
             </div>
 
         </div>
