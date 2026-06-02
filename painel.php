@@ -4,6 +4,7 @@ include('protect.php');
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="shortcut icon" type="image/x-icon" href="icon.ico">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,11 +16,11 @@ include('protect.php');
     <header class="bg-zinc-900 border-b border-zinc-800 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             
-            <div class="flex items-center space-x-2">
-                <span class="text-2xl font-black tracking-wider text-white">
-                    LARPINT<span class="text-red-600">MAX</span>
-                </span>
-            </div>
+           <div class="flex items-center space-x-3">
+    <img src="laila.png.png" alt="Logo Larpintmax" class="h-12 w-auto rounded">
+    
+  
+</div>
 
             <div class="flex items-center space-x-6">
                 <div class="text-sm text-right hidden sm:block">
