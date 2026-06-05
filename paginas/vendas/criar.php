@@ -14,12 +14,28 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if($cliente_id == 0 || $produto_id == 0 || $quantidade <= 0) {
         echo "<script>alert('Preencha todos os campos corretamente!');</script>";
     } else {
-        $sql = "INSERT INTO vendas (cliente_id, produto_id, quantidade) VALUES ('$cliente_id', '$produto_id', '$quantidade')";
-        if($mysqli->query($sql)) {
-            header("Location: index.php");
-            exit;
+        // 1. Buscamos o preço do produto selecionado usando o $produto_id
+        $query_preco = $mysqli->query("SELECT preco FROM produtos WHERE id = '$produto_id'");
+        
+        if($query_preco && $query_preco->num_rows > 0) {
+            $produto = $query_preco->fetch_assoc();
+            $preco = $produto['preco'];
+
+            // 2. Calculamos o total multiplicando a quantidade pelo preço
+            $total = $quantidade * $preco;
+
+            // 3. Adicionamos a coluna 'total' e a variável '$total' na Query de INSERT
+            $sql = "INSERT INTO vendas (cliente_id, produto_id, quantidade, total) 
+                    VALUES ('$cliente_id', '$produto_id', '$quantidade', '$total')";
+            
+            if($mysqli->query($sql)) {
+                header("Location: index.php");
+                exit;
+            } else {
+                echo "Erro ao registrar venda: " . $mysqli->error;
+            }
         } else {
-            echo "Erro ao registrar venda: " . $mysqli->error;
+            echo "<script>alert('Produto não encontrado!');</script>";
         }
     }
 }

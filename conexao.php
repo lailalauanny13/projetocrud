@@ -1,12 +1,14 @@
 <?php
-
+$host = "db"; 
 $usuario = "root";
-$senha = "";
-$database = "login";
-$host = "localhost";
+$senha = "root";
+$banco = "login"; 
 
-$mysqli = new mysqli($host, $usuario, $senha, $database);
+// Aqui mudamos o nome da variável para $mysqli para bater com o seu index.php
+$mysqli = new mysqli($host, $usuario, $senha, $banco);
 
-if ($mysqli->error) {
-    die("Falha ao conectar ao banco de dados: " . $mysqli->error);
+// Código opcional para checar se deu erro (ajuda a monitorar se a linha 10 reclamar)
+if ($mysqli->connect_error) {
+    die("Falha na conexão: " . $mysqli->connect_error);
 }
+?>

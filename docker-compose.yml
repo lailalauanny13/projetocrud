@@ -1,39 +1,35 @@
+version: '3.8'
+
 services:
+  # Sua aplicação PHP com Apache
   app:
-    image: php:8.2-apache
-    container_name: app
+    build: .
+    container_name: login_app
     ports:
       - "8080:80"
     volumes:
-      - ./:/var/www/html
+      - .:/var/www/html
     depends_on:
       - db
 
+  # Seu banco de dados MySQL
   db:
     image: mysql:8.0
-    container_name: db
+    container_name: login_db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: meu_banco
-      MYSQL_USER: usuario
-      MYSQL_PASSWORD: senha
+      MYSQL_DATABASE: login
     ports:
       - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
 
+  # O gerenciador do Banco (PHPMyAdmin)
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    restart: always
+    container_name: login_phpmyadmin
+    links:
+      - db
     ports:
       - "8081:80"
     environment:
       PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: root
-    depends_on:
-      - db
-
-volumes:
-  mysql_data:

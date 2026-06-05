@@ -1,7 +1,7 @@
 <?php
 include('conexao.php');
 
-$erro = ""; // Variável para armazenar mensagens de erro de forma organizada
+$erro = ""; 
 
 if(isset($_POST['email']) || isset($_POST['senha'])) {
 
