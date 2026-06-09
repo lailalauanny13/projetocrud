@@ -22,6 +22,8 @@ services:
       MYSQL_DATABASE: login
     ports:
       - "3306:3306"
+    volumes:
+      - ./meu_banco.sql:/docker-entrypoint-initdb.d/init.sql
 
   #  O gerenciador do Banco (PHPMyAdmin)
   phpmyadmin:
