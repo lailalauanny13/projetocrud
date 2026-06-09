@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  #  aplicação PHP com Apache
+  # Aplicação PHP com Apache
   app:
     build: .
     container_name: login_app
@@ -12,7 +10,7 @@ services:
     depends_on:
       - db
 
-  #  banco de dados MySQL
+  # Banco de dados MySQL
   db:
     image: mysql:8.0
     container_name: login_db
@@ -23,9 +21,9 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./meu_banco.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  #  O gerenciador do Banco (PHPMyAdmin)
+  # O gerenciador do Banco (PHPMyAdmin)
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: login_phpmyadmin
