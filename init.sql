@@ -76,6 +76,7 @@ CREATE TABLE `vendas` (
   `cliente_id` int(11) NOT NULL,
   `produto_id` int(11) NOT NULL,
   `quantidade` int(11) NOT NULL,
+  `total` int(11) NOT NULL,
   `data_venda` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
