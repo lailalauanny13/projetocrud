@@ -63,7 +63,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `email`, `senha`) VALUES
-(1, 'amostrada@gmail.com', 'bufu');
+(1, 'admin@gmail.com', 'projeto');
 
 -- --------------------------------------------------------
 
