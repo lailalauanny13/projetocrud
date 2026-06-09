@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Sua aplicação PHP com Apache
+  #  aplicação PHP com Apache
   app:
     build: .
     container_name: login_app
@@ -12,7 +12,7 @@ services:
     depends_on:
       - db
 
-  # Seu banco de dados MySQL
+  #  banco de dados MySQL
   db:
     image: mysql:8.0
     container_name: login_db
@@ -23,7 +23,7 @@ services:
     ports:
       - "3306:3306"
 
-  # O gerenciador do Banco (PHPMyAdmin)
+  #  O gerenciador do Banco (PHPMyAdmin)
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: login_phpmyadmin
