@@ -2,7 +2,7 @@
 include(__DIR__ . '/../../protect.php');
 include(__DIR__ . '/../../conexao.php');
 
-// 1. Verifica se o ID foi passado na URL
+// Verifica se o ID foi passado na URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: index.php");
     exit;
@@ -11,7 +11,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $id = intval($_GET['id']);
 
 try {
-    // 2. Busca o registro atual do cliente usando Prepared Statement
+    //  Busca o registro atual do cliente usando Prepared Statement
     $sql_buscar = "SELECT * FROM clientes WHERE id = :id";
     $stmt_buscar = $pdo->prepare($sql_buscar);
     $stmt_buscar->execute([':id' => $id]);
@@ -25,7 +25,7 @@ try {
     die("Falha na execução do código SQL: " . $e->getMessage());
 }
 
-// 3. Processa o salvamento das alterações
+//  Processa o salvamento das alterações
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Com PDO e Prepared Statements, não usamos real_escape_string
     $nome = $_POST['nome'];

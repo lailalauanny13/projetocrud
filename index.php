@@ -27,7 +27,7 @@ if(isset($_POST['email']) || isset($_POST['senha'])) {
                 ':senha' => $senha
             ]);
 
-            // rowCount() substitui o antigo num_rows do mysqli
+
             $quantidade = $stmt->rowCount();
 
             if($quantidade == 1) {

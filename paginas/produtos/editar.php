@@ -1,9 +1,9 @@
 <?php
-// 1. Inclui a conexão voltando duas pastas para achar a raiz do projeto
+
 include(__DIR__ . '/../../conexao.php');
 include(__DIR__ . '/../../protect.php');
 
-// 2. Verifica se o ID do produto foi passado na URL
+// Verifica se o ID do produto foi passado na URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: index.php");
     exit;
@@ -12,7 +12,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $id = intval($_GET['id']);
 
 try {
-    // 3. Busca os dados atuais do produto para preencher os inputs do HTML de forma segura
+    //  Busca os dados atuais do produto para preencher os inputs do HTML de forma segura
     $sql_buscar = "SELECT * FROM produtos WHERE id = :id";
     $stmt_buscar = $pdo->prepare($sql_buscar);
     $stmt_buscar->execute([':id' => $id]);
@@ -27,7 +27,7 @@ try {
     die("Falha na execução do código SQL: " . $e->getMessage());
 }
 
-// 4. Processa o formulário quando o usuário clica em "Salvar Alterações"
+// Processa o formulário quando o usuário clica em "Salvar Alterações"
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // No PDO com Prepared Statements, pegamos o valor direto do $_POST sem precisar de real_escape_string
     $nome = $_POST['nome'];

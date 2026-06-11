@@ -1,14 +1,24 @@
 <?php
-$host = "db"; 
+
+$host = "db";
 $usuario = "root";
 $senha = "root";
-$banco = "login"; 
+$banco = "login";
 
-// Aqui mudamos o nome da variável para $mysqli para bater com o seu index.php
-$pdo = new PDO("mysql:host=$host;dbname=$banco", $usuario, $senha);
+try {
 
-// Código opcional para checar se deu erro (ajuda a monitorar se a linha 10 reclamar)
-if ($pdo->connect_error) {
-    die("Falha na conexão: " . $pdo->connect_error);
+    $pdo = new PDO(
+        "mysql:host=$host;dbname=$banco;charset=utf8",
+        $usuario,
+        $senha
+    );
+
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+} catch (PDOException $e) {
+
+    die("Erro na conexão: " . $e->getMessage());
+
 }
+
 ?>

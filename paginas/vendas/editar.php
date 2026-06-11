@@ -108,7 +108,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </label>
                 <select name="cliente_id" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-red-500 text-zinc-100">
                     <?php 
-                    // Trocamos o loop while do mysqli por um foreach do PDO
+                    // Trocamos o loop while do  por um foreach do PDO
                     foreach($clientes as $c) { 
                         $selected = ($c['id'] == $venda['cliente_id']) ? 'selected' : '';
                     ?>
@@ -125,7 +125,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </label>
                 <select name="produto_id" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-red-500 text-zinc-100">
                     <?php 
-                    // Trocamos o loop while do mysqli por um foreach do PDO
+                
                     foreach($produtos as $p) { 
                         $selected = ($p['id'] == $venda['produto_id']) ? 'selected' : '';
                     ?>

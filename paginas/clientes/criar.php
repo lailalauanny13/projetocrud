@@ -13,7 +13,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "<script>alert('Preencha todos os campos!');</script>";
     } else {
         try {
-            // Substituímos as variáveis diretas por placeholders (:nome, :email, :telefone)
+            
             $sql = "INSERT INTO clientes (nome, email, telefone) VALUES (:nome, :email, :telefone)";
             $stmt = $pdo->prepare($sql);
             
