@@ -10,19 +10,28 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// 2. Busca o registro atual da venda
-$sql_buscar = "SELECT * FROM vendas WHERE id = '$id'";
-$query_buscar = $mysqli->query($sql_buscar) or die($mysqli->error);
-$venda = $query_buscar->fetch_assoc();
+try {
+    // 2. Busca o registro atual da venda utilizando Prepared Statement
+    $sql_buscar = "SELECT * FROM vendas WHERE id = :id";
+    $stmt_buscar = $pdo->prepare($sql_buscar);
+    $stmt_buscar->execute([':id' => $id]);
+    $venda = $stmt_buscar->fetch(PDO::FETCH_ASSOC);
 
-if(!$venda) {
-    header("Location: index.php");
-    exit;
+    if(!$venda) {
+        header("Location: index.php");
+        exit;
+    }
+
+    // 3. Carrega as listas para as caixas de seleção (Selects)
+    $query_clientes = $pdo->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
+    $clientes = $query_clientes->fetchAll(PDO::FETCH_ASSOC);
+
+    $query_produtos = $pdo->query("SELECT id, nome, preco FROM produtos ORDER BY nome ASC");
+    $produtos = $query_produtos->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    die("Falha na execução do código SQL: " . $e->getMessage());
 }
-
-// 3. Carrega as listas para as caixas de seleção (Selects)
-$query_clientes = $mysqli->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
-$query_produtos = $mysqli->query("SELECT id, nome, preco FROM produtos ORDER BY nome ASC");
 
 // 4. Processa o salvamento das alterações
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -33,26 +42,42 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if($cliente_id == 0 || $produto_id == 0 || $quantidade <= 0) {
         echo "<script>alert('Preencha todos os campos corretamente!');</script>";
     } else {
-        // Busca o preço do produto atualizado para recalcular o total da venda
-        $query_preco = $mysqli->query("SELECT preco FROM produtos WHERE id = '$produto_id'");
-        if($query_preco && $query_preco->num_rows > 0) {
-            $prod = $query_preco->fetch_assoc();
-            $preco = $prod['preco'];
-            
-            // Calcula o novo valor total
-            $total = $quantidade * $preco;
+        try {
+            // Busca o preço do produto atualizado para recalcular o total da venda
+            $sql_preco = "SELECT preco FROM produtos WHERE id = :produto_id";
+            $stmt_preco = $pdo->prepare($sql_preco);
+            $stmt_preco->execute([':produto_id' => $produto_id]);
+            $prod = $stmt_preco->fetch(PDO::FETCH_ASSOC);
 
-            // Faz o UPDATE atualizando cliente, produto, quantidade e o valor total
-            $sql_update = "UPDATE vendas SET cliente_id = '$cliente_id', produto_id = '$produto_id', quantidade = '$quantidade', total = '$total' WHERE id = '$id'";
-            
-            if($mysqli->query($sql_update)) {
-                header("Location: index.php");
-                exit;
+            if($prod) {
+                $preco = $prod['preco'];
+                
+                // Calcula o novo valor total
+                $total = $quantidade * $preco;
+
+                // Faz o UPDATE atualizando cliente, produto, quantidade e o valor total
+                $sql_update = "UPDATE vendas SET cliente_id = :cliente_id, produto_id = :produto_id, quantidade = :quantidade, total = :total WHERE id = :id";
+                $stmt_update = $pdo->prepare($sql_update);
+                
+                $executou = $stmt_update->execute([
+                    ':cliente_id' => $cliente_id,
+                    ':produto_id' => $produto_id,
+                    ':quantidade' => $quantidade,
+                    ':total'      => $total,
+                    ':id'         => $id
+                ]);
+
+                if($executou) {
+                    header("Location: index.php");
+                    exit;
+                } else {
+                    echo "<script>alert('Erro ao atualizar registro.');</script>";
+                }
             } else {
-                echo "<script>alert('Erro ao atualizar registro: " . $mysqli->error . "');</script>";
+                echo "<script>alert('Produto selecionado não encontrado!');</script>";
             }
-        } else {
-            echo "<script>alert('Produto selecionado não encontrado!');</script>";
+        } catch (PDOException $e) {
+            echo "<script>alert('Erro no banco de dados: " . addslashes($e->getMessage()) . "');</script>";
         }
     }
 }
@@ -82,7 +107,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     Selecione o Cliente
                 </label>
                 <select name="cliente_id" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-red-500 text-zinc-100">
-                    <?php while($c = $query_clientes->fetch_assoc()) { 
+                    <?php 
+                    // Trocamos o loop while do mysqli por um foreach do PDO
+                    foreach($clientes as $c) { 
                         $selected = ($c['id'] == $venda['cliente_id']) ? 'selected' : '';
                     ?>
                         <option value="<?php echo $c['id']; ?>" <?php echo $selected; ?>>
@@ -97,7 +124,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     Selecione o Produto
                 </label>
                 <select name="produto_id" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-red-500 text-zinc-100">
-                    <?php while($p = $query_produtos->fetch_assoc()) { 
+                    <?php 
+                    // Trocamos o loop while do mysqli por um foreach do PDO
+                    foreach($produtos as $p) { 
                         $selected = ($p['id'] == $venda['produto_id']) ? 'selected' : '';
                     ?>
                         <option value="<?php echo $p['id']; ?>" <?php echo $selected; ?>>

@@ -11,33 +11,48 @@ if(isset($_POST['email']) || isset($_POST['senha'])) {
         $erro = "Preencha sua senha!";
     } else {
 
-        $email = $mysqli->real_escape_string($_POST['email']);
-        $senha = $mysqli->real_escape_string($_POST['senha']);
+        // Com PDO, pegamos os dados direto sem precisar de real_escape_string
+        $email = $_POST['email'];
+        $senha = $_POST['senha'];
 
-        $sql_code = "SELECT * FROM usuarios WHERE email = '$email' AND senha = '$senha'";
-        $sql_query = $mysqli->query($sql_code) or die("Falha na execução do código SQL: " . $mysqli->error);
-
-        $quantidade = $sql_query->num_rows;
-
-        if($quantidade == 1) {
+        // Usamos placeholders (:email e :senha) para preparar a query com segurança
+        $sql_code = "SELECT * FROM usuarios WHERE email = :email AND senha = :senha";
+        
+        try {
+            $stmt = $pdo->prepare($sql_code);
             
-            $usuario = $sql_query->fetch_assoc();
+            // Passamos os dados de forma isolada dentro do execute
+            $stmt->execute([
+                ':email' => $email,
+                ':senha' => $senha
+            ]);
 
-            if(!isset($_SESSION)) {
-                session_start();
+            // rowCount() substitui o antigo num_rows do mysqli
+            $quantidade = $stmt->rowCount();
+
+            if($quantidade == 1) {
+                
+                // fetch() com o parâmetro FETCH_ASSOC substitui o fetch_assoc()
+                $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if(!isset($_SESSION)) {
+                    session_start();
+                }
+
+                $_SESSION['id'] = $usuario['id'];
+                $_SESSION['nome'] = "Administrador";
+
+                header("Location: painel.php");
+                exit;
+
+            } else {
+                $erro = "E-mail ou senha incorretos!";
             }
 
-            $_SESSION['id'] = $usuario['id'];
-            $_SESSION['nome'] = "Administrador";
-
-            header("Location: painel.php");
-
-        } else {
-            $erro = "E-mail ou senha incorretos!";
+        } catch (PDOException $e) {
+            $erro = "Falha na execução do código SQL: " . $e->getMessage();
         }
-
     }
-
 }
 ?>
 

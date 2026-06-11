@@ -3,7 +3,16 @@ include('../../protect.php');
 include('../../conexao.php');
 
 $sql = "SELECT * FROM clientes";
-$query = $mysqli->query($sql) or die($mysqli->error);
+
+try {
+    // No PDO, executamos consultas simples usando o método query()
+    $query = $pdo->query($sql);
+    
+    // fetchAll puxa todas as linhas encontradas e organiza em um array associativo
+    $clientes = $query->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Falha na execução do código SQL: " . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -43,7 +52,10 @@ $query = $mysqli->query($sql) or die($mysqli->error);
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800/50 text-sm text-zinc-300">
-                <?php while($cliente = $query->fetch_assoc()) { ?>
+                <?php 
+                // Mudamos de "while" para "foreach", pois o PDO gera um array com todos os clientes
+                foreach($clientes as $cliente) { 
+                ?>
                 <tr class="hover:bg-zinc-800/30 transition-colors">
                     <td class="p-4 font-mono text-zinc-500">#<?php echo $cliente['id']; ?></td>
                     <td class="p-4 font-semibold text-white"><?php echo htmlspecialchars($cliente['nome']); ?></td>

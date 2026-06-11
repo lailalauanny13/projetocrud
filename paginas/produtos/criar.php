@@ -4,8 +4,9 @@ include('../../conexao.php');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    $nome = $mysqli->real_escape_string($_POST['nome']);
-    $preco = $mysqli->real_escape_string($_POST['preco']);
+    // No PDO com Prepared Statements, pegamos os dados diretos do $_POST
+    $nome = $_POST['nome'];
+    $preco = $_POST['preco'];
 
     if(empty($nome) || empty($preco)) {
         echo "<script>alert('Preencha todos os campos!');</script>";
@@ -13,13 +14,25 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Altera para se adequar ao formato numérico do banco de dados (troca vírgula por ponto)
         $preco = str_replace(',', '.', $preco);
 
-        $sql = "INSERT INTO produtos (nome, preco) VALUES ('$nome', '$preco')";
-        
-        if($mysqli->query($sql)) {
-            header("Location: index.php");
-            exit;
-        } else {
-            echo "Erro ao cadastrar: " . $mysqli->error;
+        try {
+            // Preparamos a query utilizando os placeholders
+            $sql = "INSERT INTO produtos (nome, preco) VALUES (:nome, :preco)";
+            $stmt = $pdo->prepare($sql);
+            
+            // Executamos blindando as variáveis contra SQL Injection
+            $executou = $stmt->execute([
+                ':nome'  => $nome,
+                ':preco' => $preco
+            ]);
+            
+            if($executou) {
+                header("Location: index.php");
+                exit;
+            } else {
+                echo "Erro ao cadastrar.";
+            }
+        } catch (PDOException $e) {
+            echo "Erro ao cadastrar: " . $e->getMessage();
         }
     }
 }

@@ -3,19 +3,35 @@ include('../../protect.php');
 include('../../conexao.php');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nome = $mysqli->real_escape_string($_POST['nome']);
-    $email = $mysqli->real_escape_string($_POST['email']);
-    $telefone = $mysqli->real_escape_string($_POST['telefone']);
+    
+    // No PDO com Prepared Statements, coletamos os dados diretos do $_POST
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $telefone = $_POST['telefone'];
 
     if(empty($nome) || empty($email) || empty($telefone)) {
         echo "<script>alert('Preencha todos os campos!');</script>";
     } else {
-        $sql = "INSERT INTO clientes (nome, email, telefone) VALUES ('$nome', '$email', '$telefone')";
-        if($mysqli->query($sql)) {
-            header("Location: index.php");
-            exit;
-        } else {
-            echo "Erro ao cadastrar: " . $mysqli->error;
+        try {
+            // Substituímos as variáveis diretas por placeholders (:nome, :email, :telefone)
+            $sql = "INSERT INTO clientes (nome, email, telefone) VALUES (:nome, :email, :telefone)";
+            $stmt = $pdo->prepare($sql);
+            
+            // Executamos a query passando os valores mapeados de forma segura
+            $executou = $stmt->execute([
+                ':nome'     => $nome,
+                ':email'    => $email,
+                ':telefone' => $telefone
+            ]);
+
+            if($executou) {
+                header("Location: index.php");
+                exit;
+            } else {
+                echo "Erro ao cadastrar.";
+            }
+        } catch (PDOException $e) {
+            echo "Erro ao cadastrar: " . $e->getMessage();
         }
     }
 }

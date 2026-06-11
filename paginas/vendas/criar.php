@@ -2,9 +2,16 @@
 include('../../protect.php');
 include('../../conexao.php');
 
-// Busca todos os clientes e produtos para colocar nas caixas de seleção do formulário
-$query_clientes = $mysqli->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
-$query_produtos = $mysqli->query("SELECT id, nome, preco FROM produtos ORDER BY nome ASC");
+try {
+    // Busca todos os clientes e produtos para colocar nas caixas de seleção do formulário
+    $query_clientes = $pdo->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
+    $clientes = $query_clientes->fetchAll(PDO::FETCH_ASSOC);
+
+    $query_produtos = $pdo->query("SELECT id, nome, preco FROM produtos ORDER BY nome ASC");
+    $produtos = $query_produtos->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Falha ao carregar dados do formulário: " . $e->getMessage());
+}
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cliente_id = intval($_POST['cliente_id']);
@@ -14,28 +21,42 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if($cliente_id == 0 || $produto_id == 0 || $quantidade <= 0) {
         echo "<script>alert('Preencha todos os campos corretamente!');</script>";
     } else {
-        // 1. Buscamos o preço do produto selecionado usando o $produto_id
-        $query_preco = $mysqli->query("SELECT preco FROM produtos WHERE id = '$produto_id'");
-        
-        if($query_preco && $query_preco->num_rows > 0) {
-            $produto = $query_preco->fetch_assoc();
-            $preco = $produto['preco'];
-
-            // 2. Calculamos o total multiplicando a quantidade pelo preço
-            $total = $quantidade * $preco;
-
-            // 3. Adicionamos a coluna 'total' e a variável '$total' na Query de INSERT
-            $sql = "INSERT INTO vendas (cliente_id, produto_id, quantidade, total) 
-                    VALUES ('$cliente_id', '$produto_id', '$quantidade', '$total')";
+        try {
+            // 1. Buscamos o preço do produto selecionado de forma segura usando Prepared Statement
+            $sql_preco = "SELECT preco FROM produtos WHERE id = :produto_id";
+            $stmt_preco = $pdo->prepare($sql_preco);
+            $stmt_preco->execute([':produto_id' => $produto_id]);
+            $produto = $stmt_preco->fetch(PDO::FETCH_ASSOC);
             
-            if($mysqli->query($sql)) {
-                header("Location: index.php");
-                exit;
+            if($produto) {
+                $preco = $produto['preco'];
+
+                // 2. Calculamos o total multiplicando a quantidade pelo preço
+                $total = $quantidade * $preco;
+
+                // 3. Query de INSERT utilizando placeholders do PDO
+                $sql_insert = "INSERT INTO vendas (cliente_id, produto_id, quantidade, total) 
+                               VALUES (:cliente_id, :produto_id, :quantidade, :total)";
+                
+                $stmt_insert = $pdo->prepare($sql_insert);
+                $executou = $stmt_insert->execute([
+                    ':cliente_id' => $cliente_id,
+                    ':produto_id' => $produto_id,
+                    ':quantidade' => $quantidade,
+                    ':total'      => $total
+                ]);
+                
+                if($executou) {
+                    header("Location: index.php");
+                    exit;
+                } else {
+                    echo "Erro ao registrar venda.";
+                }
             } else {
-                echo "Erro ao registrar venda: " . $mysqli->error;
+                echo "<script>alert('Produto não encontrado!');</script>";
             }
-        } else {
-            echo "<script>alert('Produto não encontrado!');</script>";
+        } catch (PDOException $e) {
+            echo "Erro no banco de dados: " . $e->getMessage();
         }
     }
 }
@@ -69,7 +90,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Selecione o Cliente</label>
                     <select name="cliente_id" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-zinc-100 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-colors">
                         <option value="">-- Escolha um Cliente --</option>
-                        <?php while($c = $query_clientes->fetch_assoc()) { ?>
+                        <?php 
+                        // Alterado de while para foreach usando a lista guardada na memória
+                        foreach($clientes as $c) { 
+                        ?>
                             <option value="<?php echo $c['id']; ?>"><?php echo htmlspecialchars($c['nome']); ?></option>
                         <?php } ?>
                     </select>
@@ -79,7 +103,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Selecione o Produto</label>
                     <select name="produto_id" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-zinc-100 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-colors">
                         <option value="">-- Escolha um Produto --</option>
-                        <?php while($p = $query_produtos->fetch_assoc()) { ?>
+                        <?php 
+                        // Alterado de while para foreach usando a lista guardada na memória
+                        foreach($produtos as $p) { 
+                        ?>
                             <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nome']); ?> (R$ <?php echo number_format($p['preco'], 2, ',', '.'); ?>)</option>
                         <?php } ?>
                     </select>

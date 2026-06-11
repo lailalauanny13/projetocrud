@@ -11,31 +11,48 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// 3. Busca os dados atuais do produto para preencher os inputs do HTML
-$query = $mysqli->query("SELECT * FROM produtos WHERE id = '$id'");
+try {
+    // 3. Busca os dados atuais do produto para preencher os inputs do HTML de forma segura
+    $sql_buscar = "SELECT * FROM produtos WHERE id = :id";
+    $stmt_buscar = $pdo->prepare($sql_buscar);
+    $stmt_buscar->execute([':id' => $id]);
+    $produto = $stmt_buscar->fetch(PDO::FETCH_ASSOC);
 
-if ($query && $query->num_rows > 0) {
-    $produto = $query->fetch_assoc();
-} else {
-    // Se o produto não existir no banco, volta para a listagem
-    header("Location: index.php");
-    exit;
+    if (!$produto) {
+        // Se o produto não existir no banco, volta para a listagem
+        header("Location: index.php");
+        exit;
+    }
+} catch (PDOException $e) {
+    die("Falha na execução do código SQL: " . $e->getMessage());
 }
 
 // 4. Processa o formulário quando o usuário clica em "Salvar Alterações"
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nome = $mysqli->real_escape_string($_POST['nome']);
-    $preco = $mysqli->real_escape_string($_POST['preco']);
+    // No PDO com Prepared Statements, pegamos o valor direto do $_POST sem precisar de real_escape_string
+    $nome = $_POST['nome'];
+    $preco = $_POST['preco'];
 
-    // Atualiza os dados no banco de dados
-    $update = $mysqli->query("UPDATE produtos SET nome = '$nome', preco = '$preco' WHERE id = '$id'");
-    
-    if ($update) {
-        // Redireciona de volta para a lista de produtos após salvar
-        header("Location: index.php");
-        exit;
-    } else {
-        echo "<script>alert('Erro ao atualizar produto: " . $mysqli->error . "');</script>";
+    try {
+        // Atualiza os dados no banco de dados usando placeholders vinculados
+        $sql_update = "UPDATE produtos SET nome = :nome, preco = :preco WHERE id = :id";
+        $stmt_update = $pdo->prepare($sql_update);
+        
+        $update = $stmt_update->execute([
+            ':nome'  => $nome,
+            ':preco' => $preco,
+            ':id'    => $id
+        ]);
+        
+        if ($update) {
+            // Redireciona de volta para a lista de produtos após salvar
+            header("Location: index.php");
+            exit;
+        } else {
+            echo "<script>alert('Erro ao atualizar produto.');</script>";
+        }
+    } catch (PDOException $e) {
+        echo "<script>alert('Erro ao atualizar produto: " . addslashes($e->getMessage()) . "');</script>";
     }
 }
 ?>
@@ -70,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     name="nome"
                     value="<?php echo htmlspecialchars($produto['nome']); ?>"
                     required
-                    class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-red-500"
+                    class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-red-500 text-zinc-100"
                 >
             </div>
 
@@ -84,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     name="preco"
                     value="<?php echo htmlspecialchars($produto['preco']); ?>"
                     required
-                    class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-red-500"
+                    class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-red-500 text-zinc-100"
                 >
             </div>
 
@@ -99,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <a
                     href="index.php"
-                    class="bg-zinc-700 hover:bg-zinc-600 px-6 py-3 rounded-lg transition"
+                    class="bg-zinc-700 hover:bg-zinc-600 px-6 py-3 rounded-lg transition text-center"
                 >
                     Cancelar
                 </a>

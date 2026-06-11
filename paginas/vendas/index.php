@@ -9,7 +9,15 @@ $sql = "SELECT v.id, c.nome AS cliente_nome, p.nome AS produto_nome, p.preco, v.
         INNER JOIN produtos p ON v.produto_id = p.id
         ORDER BY v.id DESC";
 
-$query = $mysqli->query($sql) or die($mysqli->error);
+try {
+    // No PDO, executamos queries de leitura simples usando $pdo->query()
+    $query = $pdo->query($sql);
+    
+    // fetchAll traz todas as linhas de uma vez como um array associativo
+    $vendas = $query->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Falha na execução do código SQL: " . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -51,7 +59,9 @@ $query = $mysqli->query($sql) or die($mysqli->error);
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800/50 text-sm text-zinc-300">
-                <?php while($venda = $query->fetch_assoc()) { 
+                <?php 
+                // Mudamos de "while" para "foreach", pois o PDO gera um array com todas as vendas
+                foreach($vendas as $venda) { 
                     $total = $venda['preco'] * $venda['quantidade'];
                 ?>
                 <tr class="hover:bg-zinc-800/30 transition-colors">

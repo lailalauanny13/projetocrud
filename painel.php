@@ -23,9 +23,7 @@ include('protect.php');
             </div>
 
             <div class="bg-zinc-950/40 border border-zinc-800/60 rounded-xl p-3 flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-full bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-500 font-bold text-sm uppercase">
-                    <?php echo mb_substr($_SESSION['nome'], 0, 1, 'UTF-8'); ?>
-                </div>
+           
                 <div class="text-sm truncate">
                     <p class="text-xs text-zinc-500 font-medium">Logado como:</p>
                     <p class="font-semibold text-zinc-200 truncate"><?php echo $_SESSION['nome']; ?></p>

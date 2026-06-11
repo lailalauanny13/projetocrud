@@ -1,16 +1,28 @@
 <?php
-include('../../protect.php');
-include('../../conexao.php');
+include('../../protect.php'); // Protege a página contra acessos diretos
+include('../../conexao.php'); // Carrega a conexão com o banco de dados
 
+// Garante que o ID recebido seja um número inteiro
 $id = intval($_GET['id']);
 
 if(isset($_POST['confirmar'])){
 
-    $sql = "DELETE FROM produtos WHERE id = '$id'";
+    // Usamos o placeholder :id para preparar a query com total segurança
+    $sql = "DELETE FROM produtos WHERE id = :id";
 
-    if($mysqli->query($sql)){
-        header("Location: index.php");
-        exit;
+    try {
+        $stmt = $pdo->prepare($sql);
+        
+        // Executa a query passando o ID mapeado
+        $executou = $stmt->execute([':id' => $id]);
+
+        if($executou){
+            header("Location: index.php");
+            exit;
+        }
+    } catch (PDOException $e) {
+        // Caso aconteça algum erro (como o produto estar amarrado a uma venda existente)
+        die("Erro ao excluir produto: " . $e->getMessage());
     }
 }
 ?>
@@ -48,7 +60,7 @@ if(isset($_POST['confirmar'])){
 
         <a
             href="index.php"
-            class="bg-zinc-700 hover:bg-zinc-600 px-5 py-2 rounded-lg transition"
+            class="bg-zinc-700 hover:bg-zinc-600 px-5 py-2 rounded-lg transition text-center"
         >
             Cancelar
         </a>

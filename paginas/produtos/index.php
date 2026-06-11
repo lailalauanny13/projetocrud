@@ -4,7 +4,16 @@ include('../../conexao.php'); // Carrega a conexão com o banco de dados
 
 // Faz a consulta SQL para buscar todos os produtos cadastrados
 $sql = "SELECT * FROM produtos";
-$query = $mysqli->query($sql) or die("Falha na execução do código SQL: " . $mysqli->error);
+
+try {
+    // No PDO, executamos consultas de leitura sem parâmetros externos usando o método query()
+    $query = $pdo->query($sql);
+    
+    // fetchAll puxa todas as linhas encontradas e organiza em um array associativo
+    $produtos = $query->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Falha na execução do código SQL: " . $e->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
@@ -69,7 +78,10 @@ $query = $mysqli->query($sql) or die("Falha na execução do código SQL: " . $m
 
             <tbody class="divide-y divide-zinc-800/50 text-sm text-zinc-300">
 
-                <?php while($produto = $query->fetch_assoc()) { ?>
+                <?php 
+                // Mudamos de "while" para "foreach", varrendo a lista estruturada de produtos obtida pelo PDO
+                foreach($produtos as $produto) { 
+                ?>
 
                 <tr class="hover:bg-zinc-800/30 transition-colors">
 

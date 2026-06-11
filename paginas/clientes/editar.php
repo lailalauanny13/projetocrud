@@ -10,31 +10,51 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// 2. Busca o registro atual do cliente
-$sql_buscar = "SELECT * FROM clientes WHERE id = '$id'";
-$query_buscar = $mysqli->query($sql_buscar) or die($mysqli->error);
-$cliente = $query_buscar->fetch_assoc();
+try {
+    // 2. Busca o registro atual do cliente usando Prepared Statement
+    $sql_buscar = "SELECT * FROM clientes WHERE id = :id";
+    $stmt_buscar = $pdo->prepare($sql_buscar);
+    $stmt_buscar->execute([':id' => $id]);
+    $cliente = $stmt_buscar->fetch(PDO::FETCH_ASSOC);
 
-if(!$cliente) {
-    header("Location: index.php");
-    exit;
+    if(!$cliente) {
+        header("Location: index.php");
+        exit;
+    }
+} catch (PDOException $e) {
+    die("Falha na execução do código SQL: " . $e->getMessage());
 }
 
 // 3. Processa o salvamento das alterações
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nome = $mysqli->real_escape_string($_POST['nome']);
-    $email = $mysqli->real_escape_string($_POST['email']);
-    $telefone = $mysqli->real_escape_string($_POST['telefone']);
+    // Com PDO e Prepared Statements, não usamos real_escape_string
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $telefone = $_POST['telefone'];
 
     if(empty($nome) || empty($email) || empty($telefone)) {
         echo "<script>alert('Preencha todos os campos!');</script>";
     } else {
-        $sql_update = "UPDATE clientes SET nome = '$nome', email = '$email', telefone = '$telefone' WHERE id = '$id'";
-        if($mysqli->query($sql_update)) {
-            header("Location: index.php");
-            exit;
-        } else {
-            echo "<script>alert('Erro ao atualizar: " . $mysqli->error . "');</script>";
+        try {
+            // Atualiza os dados usando parâmetros vinculados de forma segura
+            $sql_update = "UPDATE clientes SET nome = :nome, email = :email, telefone = :telefone WHERE id = :id";
+            $stmt_update = $pdo->prepare($sql_update);
+            
+            $executou = $stmt_update->execute([
+                ':nome'     => $nome,
+                ':email'    => $email,
+                ':telefone' => $telefone,
+                ':id'       => $id
+            ]);
+
+            if($executou) {
+                header("Location: index.php");
+                exit;
+            } else {
+                echo "<script>alert('Erro ao atualizar registro.');</script>";
+            }
+        } catch (PDOException $e) {
+            echo "<script>alert('Erro ao atualizar: " . addslashes($e->getMessage()) . "');</script>";
         }
     }
 }
