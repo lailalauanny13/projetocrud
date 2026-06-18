@@ -1,15 +1,15 @@
 <?php
-include('../../protect.php'); // Protege a página contra acessos diretos
-include('../../conexao.php'); // Carrega a conexão com o banco de dados
+include('../../protect.php'); 
+include('../../conexao.php'); 
 
-// Faz a consulta SQL para buscar todos os produtos cadastrados
+
 $sql = "SELECT * FROM produtos";
 
 try {
-    // No PDO, executamos consultas de leitura sem parâmetros externos usando o método query()
+    
     $query = $pdo->query($sql);
     
-    // fetchAll puxa todas as linhas encontradas e organiza em um array associativo
+    
     $produtos = $query->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Falha na execução do código SQL: " . $e->getMessage());

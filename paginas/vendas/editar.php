@@ -2,7 +2,7 @@
 include(__DIR__ . '/../../protect.php');
 include(__DIR__ . '/../../conexao.php');
 
-// 1. Verifica se o ID foi passado na URL
+
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: index.php");
     exit;
@@ -11,7 +11,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $id = intval($_GET['id']);
 
 try {
-    // 2. Busca o registro atual da venda utilizando Prepared Statement
+    
     $sql_buscar = "SELECT * FROM vendas WHERE id = :id";
     $stmt_buscar = $pdo->prepare($sql_buscar);
     $stmt_buscar->execute([':id' => $id]);
@@ -22,7 +22,7 @@ try {
         exit;
     }
 
-    // 3. Carrega as listas para as caixas de seleção (Selects)
+    
     $query_clientes = $pdo->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
     $clientes = $query_clientes->fetchAll(PDO::FETCH_ASSOC);
 
@@ -33,7 +33,6 @@ try {
     die("Falha na execução do código SQL: " . $e->getMessage());
 }
 
-// 4. Processa o salvamento das alterações
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cliente_id = intval($_POST['cliente_id']);
     $produto_id = intval($_POST['produto_id']);
@@ -43,7 +42,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "<script>alert('Preencha todos os campos corretamente!');</script>";
     } else {
         try {
-            // Busca o preço do produto atualizado para recalcular o total da venda
+    
             $sql_preco = "SELECT preco FROM produtos WHERE id = :produto_id";
             $stmt_preco = $pdo->prepare($sql_preco);
             $stmt_preco->execute([':produto_id' => $produto_id]);
@@ -52,10 +51,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             if($prod) {
                 $preco = $prod['preco'];
                 
-                // Calcula o novo valor total
+                
                 $total = $quantidade * $preco;
 
-                // Faz o UPDATE atualizando cliente, produto, quantidade e o valor total
+                
                 $sql_update = "UPDATE vendas SET cliente_id = :cliente_id, produto_id = :produto_id, quantidade = :quantidade, total = :total WHERE id = :id";
                 $stmt_update = $pdo->prepare($sql_update);
                 

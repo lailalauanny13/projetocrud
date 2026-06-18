@@ -1,5 +1,5 @@
 <?php
-// ISSO DEVE SER A PRIMEIRA COISA DO ARQUIVO!
+
 include('protect.php'); 
 ?>
 

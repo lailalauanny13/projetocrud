@@ -4,22 +4,21 @@ include('../../conexao.php');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    // No PDO com Prepared Statements, pegamos os dados diretos do $_POST
     $nome = $_POST['nome'];
     $preco = $_POST['preco'];
 
     if(empty($nome) || empty($preco)) {
         echo "<script>alert('Preencha todos os campos!');</script>";
     } else {
-        // Altera para se adequar ao formato numérico do banco de dados (troca vírgula por ponto)
+        
         $preco = str_replace(',', '.', $preco);
 
         try {
-            // Preparamos a query utilizando os placeholders
+            
             $sql = "INSERT INTO produtos (nome, preco) VALUES (:nome, :preco)";
             $stmt = $pdo->prepare($sql);
             
-            // Executamos blindando as variáveis contra SQL Injection
+            
             $executou = $stmt->execute([
                 ':nome'  => $nome,
                 ':preco' => $preco

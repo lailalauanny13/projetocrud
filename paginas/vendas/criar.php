@@ -3,7 +3,7 @@ include('../../protect.php');
 include('../../conexao.php');
 
 try {
-    // Busca todos os clientes e produtos para colocar nas caixas de seleção do formulário
+    
     $query_clientes = $pdo->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
     $clientes = $query_clientes->fetchAll(PDO::FETCH_ASSOC);
 
@@ -22,7 +22,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "<script>alert('Preencha todos os campos corretamente!');</script>";
     } else {
         try {
-            // 1. Buscamos o preço do produto selecionado de forma segura usando Prepared Statement
+        
             $sql_preco = "SELECT preco FROM produtos WHERE id = :produto_id";
             $stmt_preco = $pdo->prepare($sql_preco);
             $stmt_preco->execute([':produto_id' => $produto_id]);
@@ -31,10 +31,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             if($produto) {
                 $preco = $produto['preco'];
 
-                // 2. Calculamos o total multiplicando a quantidade pelo preço
+                
                 $total = $quantidade * $preco;
 
-                // 3. Query de INSERT utilizando placeholders do PDO
+                
                 $sql_insert = "INSERT INTO vendas (cliente_id, produto_id, quantidade, total) 
                                VALUES (:cliente_id, :produto_id, :quantidade, :total)";
                 

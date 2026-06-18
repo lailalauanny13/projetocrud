@@ -11,17 +11,17 @@ if(isset($_POST['email']) || isset($_POST['senha'])) {
         $erro = "Preencha sua senha!";
     } else {
 
-        // Com PDO, pegamos os dados direto sem precisar de real_escape_string
+        
         $email = $_POST['email'];
         $senha = $_POST['senha'];
 
-        // Usamos placeholders (:email e :senha) para preparar a query com segurança
+        
         $sql_code = "SELECT * FROM usuarios WHERE email = :email AND senha = :senha";
         
         try {
             $stmt = $pdo->prepare($sql_code);
             
-            // Passamos os dados de forma isolada dentro do execute
+            
             $stmt->execute([
                 ':email' => $email,
                 ':senha' => $senha
@@ -32,7 +32,7 @@ if(isset($_POST['email']) || isset($_POST['senha'])) {
 
             if($quantidade == 1) {
                 
-                // fetch() com o parâmetro FETCH_ASSOC substitui o fetch_assoc()
+
                 $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if(!isset($_SESSION)) {

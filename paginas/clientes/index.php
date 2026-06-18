@@ -5,10 +5,10 @@ include('../../conexao.php');
 $sql = "SELECT * FROM clientes";
 
 try {
-    // No PDO, executamos consultas simples usando o método query()
+
     $query = $pdo->query($sql);
     
-    // fetchAll puxa todas as linhas encontradas e organiza em um array associativo
+    
     $clientes = $query->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Falha na execução do código SQL: " . $e->getMessage());

@@ -2,7 +2,7 @@
 include('../../protect.php');
 include('../../conexao.php');
 
-// Consulta avançada para trazer os nomes de clientes e produtos juntamente com a venda
+
 $sql = "SELECT v.id, c.nome AS cliente_nome, p.nome AS produto_nome, p.preco, v.quantidade, v.data_venda 
         FROM vendas v
         INNER JOIN clientes c ON v.cliente_id = c.id
@@ -10,10 +10,10 @@ $sql = "SELECT v.id, c.nome AS cliente_nome, p.nome AS produto_nome, p.preco, v.
         ORDER BY v.id DESC";
 
 try {
-    // No PDO, executamos queries de leitura simples usando $pdo->query()
+    
     $query = $pdo->query($sql);
     
-    // fetchAll traz todas as linhas de uma vez como um array associativo
+    
     $vendas = $query->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Falha na execução do código SQL: " . $e->getMessage());

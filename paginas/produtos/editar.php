@@ -3,7 +3,7 @@
 include(__DIR__ . '/../../conexao.php');
 include(__DIR__ . '/../../protect.php');
 
-// Verifica se o ID do produto foi passado na URL
+
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: index.php");
     exit;
@@ -12,14 +12,14 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $id = intval($_GET['id']);
 
 try {
-    //  Busca os dados atuais do produto para preencher os inputs do HTML de forma segura
+    
     $sql_buscar = "SELECT * FROM produtos WHERE id = :id";
     $stmt_buscar = $pdo->prepare($sql_buscar);
     $stmt_buscar->execute([':id' => $id]);
     $produto = $stmt_buscar->fetch(PDO::FETCH_ASSOC);
 
     if (!$produto) {
-        // Se o produto não existir no banco, volta para a listagem
+    
         header("Location: index.php");
         exit;
     }
@@ -27,14 +27,14 @@ try {
     die("Falha na execução do código SQL: " . $e->getMessage());
 }
 
-// Processa o formulário quando o usuário clica em "Salvar Alterações"
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // No PDO com Prepared Statements, pegamos o valor direto do $_POST sem precisar de real_escape_string
+    
     $nome = $_POST['nome'];
     $preco = $_POST['preco'];
 
     try {
-        // Atualiza os dados no banco de dados usando placeholders vinculados
+        
         $sql_update = "UPDATE produtos SET nome = :nome, preco = :preco WHERE id = :id";
         $stmt_update = $pdo->prepare($sql_update);
         
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
         
         if ($update) {
-            // Redireciona de volta para a lista de produtos após salvar
+    
             header("Location: index.php");
             exit;
         } else {

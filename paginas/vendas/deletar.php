@@ -2,7 +2,6 @@
 include('../../protect.php');
 include('../../conexao.php');
 
-// Garante que o ID seja um número inteiro para segurança adicional
 $id = intval($_GET['id']);
 
 if ($id <= 0) {
@@ -10,15 +9,15 @@ if ($id <= 0) {
     exit;
 }
 
-// Só executa a exclusão após o usuário clicar no botão "Sim, excluir" (via POST)
+
 if(isset($_POST['confirmar'])){
-    // Usamos o placeholder :id para preparar a query de forma segura
+    
     $sql = "DELETE FROM vendas WHERE id = :id";
 
     try {
         $stmt = $pdo->prepare($sql);
         
-        // Executa passando o ID mapeado
+    
         $executou = $stmt->execute([':id' => $id]);
 
         if($executou) {

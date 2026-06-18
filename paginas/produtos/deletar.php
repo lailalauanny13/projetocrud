@@ -1,19 +1,18 @@
 <?php
-include('../../protect.php'); // Protege a página contra acessos diretos
-include('../../conexao.php'); // Carrega a conexão com o banco de dados
+include('../../protect.php'); 
+include('../../conexao.php');
 
-// Garante que o ID recebido seja um número inteiro
 $id = intval($_GET['id']);
 
 if(isset($_POST['confirmar'])){
 
-    // Usamos o placeholder :id para preparar a query com total segurança
+    
     $sql = "DELETE FROM produtos WHERE id = :id";
 
     try {
         $stmt = $pdo->prepare($sql);
         
-        // Executa a query passando o ID mapeado
+        
         $executou = $stmt->execute([':id' => $id]);
 
         if($executou){
@@ -21,7 +20,7 @@ if(isset($_POST['confirmar'])){
             exit;
         }
     } catch (PDOException $e) {
-        // Caso aconteça algum erro (como o produto estar amarrado a uma venda existente)
+        
         die("Erro ao excluir produto: " . $e->getMessage());
     }
 }

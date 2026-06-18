@@ -4,7 +4,7 @@ include('../../conexao.php');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    // No PDO com Prepared Statements, coletamos os dados diretos do $_POST
+    
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $telefone = $_POST['telefone'];
@@ -17,7 +17,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $sql = "INSERT INTO clientes (nome, email, telefone) VALUES (:nome, :email, :telefone)";
             $stmt = $pdo->prepare($sql);
             
-            // Executamos a query passando os valores mapeados de forma segura
+            
             $executou = $stmt->execute([
                 ':nome'     => $nome,
                 ':email'    => $email,
