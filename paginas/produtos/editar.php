@@ -30,8 +30,8 @@ try {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    $nome = $_POST['nome'];
-    $preco = $_POST['preco'];
+   $nome = trim($_POST['nome']);
+   $preco = trim($_POST['preco']);
 
     try {
         

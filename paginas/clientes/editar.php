@@ -27,10 +27,10 @@ try {
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $telefone = $_POST['telefone'];
-
+   $nome = trim($_POST['nome']);
+   $email = trim($_POST['email']);
+   $telefone = trim($_POST['telefone']);
+   
     if(empty($nome) || empty($email) || empty($telefone)) {
         echo "<script>alert('Preencha todos os campos!');</script>";
     } else {

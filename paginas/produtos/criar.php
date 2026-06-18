@@ -4,8 +4,8 @@ include('../../conexao.php');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    $nome = $_POST['nome'];
-    $preco = $_POST['preco'];
+    $nome = trim($_POST['nome']);
+    $preco = trim($_POST['preco']);
 
     if(empty($nome) || empty($preco)) {
         echo "<script>alert('Preencha todos os campos!');</script>";

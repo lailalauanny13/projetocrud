@@ -14,9 +14,9 @@ try {
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $cliente_id = intval($_POST['cliente_id']);
-    $produto_id = intval($_POST['produto_id']);
-    $quantidade = intval($_POST['quantidade']);
+$cliente_id = intval(trim($_POST['cliente_id']));
+$produto_id = intval(trim($_POST['produto_id']));
+$quantidade = intval(trim($_POST['quantidade']));
 
     if($cliente_id == 0 || $produto_id == 0 || $quantidade <= 0) {
         echo "<script>alert('Preencha todos os campos corretamente!');</script>";
